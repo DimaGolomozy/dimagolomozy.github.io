@@ -1,0 +1,17 @@
+title: dimagolomozy.github.io
+email: dima.golomozy@gmail.com
+description: >-
+  Small blog about programming;
+  Java, Python, Amazon Web Service (AWS), DevOps
+  and more...
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+facebook_username: dima.golomozy
+github_username: dimagolomozy
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
