@@ -3,8 +3,6 @@
  */
 .highlight {
   background: #fff;
-  max-height: 600px;
-  overflow-y: auto;
   @extend %vertical-rhythm;
 
   .highlighter-rouge & {
