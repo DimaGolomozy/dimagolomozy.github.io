@@ -12,4 +12,5 @@ github_username: dimagolomozy
 # Build settings
 markdown: kramdown
 theme: minima
-
+plugins:
+  - jekyll-gist
