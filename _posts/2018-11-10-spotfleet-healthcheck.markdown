@@ -3,9 +3,9 @@ layout: post
 title:  "ELB Health Check With AWS Spot Fleet"
 summary: "Tutorial on how to integrate ELB health check with Amazon Spot Fleet"
 date:   2018-11-10 14:00:00
-image: /assets/images/spotfleet-healthcheck/spotfleet-healthcheck.png
+header-img: assets/images/spotfleet-healthcheck/spotfleet-healthcheck.png
 comments: true
-tags: [aws, spotfleet, health check]
+tags: [aws, spotfleet, health check, elb, lambda]
 ---
 In mid-2015, AWS announced [Spot Fleet][spotfleet-annunced] to make the EC2 Spot Instance model even more useful. With the addition of a new API, Spot Fleet allowed one to launch and manage an entire fleet of Spot Instances with just one request.
   
