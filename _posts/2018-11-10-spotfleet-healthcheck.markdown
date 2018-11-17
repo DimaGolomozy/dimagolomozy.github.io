@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "ELB health check with AWS Spot Fleet!"
-summary: "A way to integrate custom health check with spot fleet"
+title:  "ELB Health Check With AWS Spot Fleet"
+summary: "Tutorial on how to integrate ELB health check with Amazon Spot Fleet"
 date:   2018-11-10 14:00:00
 comments: true
 tags: [aws, spotfleet, health check]
