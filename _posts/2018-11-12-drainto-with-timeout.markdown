@@ -1,10 +1,10 @@
 ---
 layout: post
 title:  "Java BlockingQueue With Timeout Option In drainTo Method"
-summary: "My implementetion for drainTo with timeout method for BlockingQueue in Java usins a Semaphore"
+description: "My implementetion for drainTo with timeout method for BlockingQueue in Java usins a Semaphore"
 date:   2018-11-12 01:00:00
 comments: true
-tags: [java, BlockingQueue, drainTo]
+tags: [java, BlockingQueue, drainTo, Semaphore]
 ---
 
 Lots of options for `drainTo` with timeout option are out there.
