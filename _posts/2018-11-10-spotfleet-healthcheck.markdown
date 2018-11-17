@@ -3,6 +3,7 @@ layout: post
 title:  "ELB Health Check With AWS Spot Fleet"
 summary: "Tutorial on how to integrate ELB health check with Amazon Spot Fleet"
 date:   2018-11-10 14:00:00
+image: /assets/images/spotfleet-healthcheck/spotfleet-healthcheck.png
 comments: true
 tags: [aws, spotfleet, health check]
 ---
@@ -37,7 +38,7 @@ Once terminated, Spot Fleet will automatically launch a new one to maintain its 
 
 The following diagram shows how the components work together.  
 
-![Spot Fleet With Health Check](/assets/images/spotfleet-healthcheck/spotfleet-healthcheck.png)
+![Spot Fleet With Health Check]({{ site.url }}/assets/images/spotfleet-healthcheck/spotfleet-healthcheck.png)
 
 ## Review the details
 _All the code and cloudformation templates are minimal and shows only whats needed for this blog post._
