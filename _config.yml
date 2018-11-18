@@ -6,13 +6,7 @@ description: >-
   and more...
 baseurl: ""
 url: "http://dimagolomozy.github.io"
-facebook_username: dima.golomozy
-github_username: dimagolomozy
-
-# Build settings
-markdown: kramdown
-theme: minima
-show_drafts: false
+facebook_us false
 plugins:
   - jekyll-gist
   - jekyll-seo-tag
