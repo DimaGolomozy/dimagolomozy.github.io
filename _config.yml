@@ -8,6 +8,7 @@ baseurl: ""
 url: "http://dimagolomozy.github.io"
 facebook_username: dima.golomozy
 github_username: dimagolomozy
+linkedin_username: dima-golomozy
 
 # Build settings
 markdown: kramdown
