@@ -214,6 +214,10 @@ pre {
     display: inline-block;
     fill: #{$grey-color};
     vertical-align: middle;
+	
+	&:hover {
+		fill: #{$grey-color-dark};
+  }
 }
 
 .social-media-list {
