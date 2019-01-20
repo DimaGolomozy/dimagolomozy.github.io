@@ -16,13 +16,13 @@ Spot Fleet comes with some great features:
  
 But to better understand how Spot Fleet works, visit [How Spot Fleet Works][aws-spotfleet]
   
-As great Spot Fleet is, its still has some gaps, one of them is the Health Check.  
+As great Spot Fleet is, it's still has some gaps, one of them is the Health Check.  
 > Spot Fleet checks the health status of the Spot Instances in the fleet every two minutes. The health status of an instance is either healthy or unhealthy. Spot Fleet determines the health status of an instance using the **status checks provided by Amazon EC2**.  
 
 As you can see, Spot Fleet health check is based on [EC2 health check status][aws-ec2-check-status], that means no way to determine the health check by ELB.
 In some cases, once the ELB marks the instance as `unhealthy`, we would like to replace it - like [AWS Auto Scaling Group][aws-asg] does. Well, that is not an option in Spot Fleet.  
 But fear no more, in this blog post I will explain how it can be done with the help of a little more AWS services and some Python coding.
-So lets begin...
+So, lets begin...
 
 ## Architecture
 
@@ -33,7 +33,7 @@ We will use [AWS CloudFormation Template][aws-cloudformation-template] to deploy
 
 For the purpose of the example, I will use a Spot Fleet behind an Application Load Balancer, that uses a health check to determine if the instance is ready for incoming traffic.
 Once the instance is `unhealthy` the ALB stops sending it traffic, and I want to give it time to recover before terminating it - This is the job for... the ELB.  
-When the cloudwatch alarm is triggered because of an unhealthy instances count in the ELB, a Lambda function will be executed with a python script, that will de-register the unhealthy instance and finally terminate it.
+When the CloudWatch alarm is triggered because of an unhealthy instance count in the ELB, a Lambda function will be executed with a python script, that will de-register the unhealthy instance and finally terminate it.
 Once terminated, Spot Fleet will automatically launch a new one to maintain its Target Capacity.  
 
 The following diagram shows how the components work together.  
@@ -41,7 +41,7 @@ The following diagram shows how the components work together.
 ![Spot Fleet With Health Check]({{ site.url }}/assets/images/spotfleet-healthcheck/spotfleet-healthcheck.png)
 
 ## Review the details
-_All the code and cloudformation templates are minimal and shows only whats needed for this blog post._
+_All the code and CloudFormation templates are minimal and shows only what's needed for this blog post._
 
 #### Elastic Load Balancing
 Because I want to give the instance time to recover from its `Unhealthy` state (determent by the ALB), 
@@ -127,7 +127,7 @@ Pay attention to the **_reset_alarm_** function, with this function we want to r
 Because CloudWatch Alarm has no option for repeat action when the alarm is raised, we could end up with failing instances 
 and the lambda won't be triggered any more. This why, by setting the alarm state back to `OK`, will cause it to trigger the action once again when the state changes to `ALARM`.
 
-Next we will give the Lambda function permissions to be invoked from the SNS topic.
+Next, we will give the Lambda function permissions to be invoked from the SNS topic.
 {% highlight json %}
 {
   "UnhealthySNSTopicPermission": {
@@ -233,7 +233,7 @@ And uses the Elastic Load Balancing for the Health Check (I could use the ALB fo
 
 ## Test
 After launching the CloudFormation stack. I want to simulate an `unhealthy` instance. For that I logged into a random instance from the Spot Fleet and stopped my application (the application that supposed to answer to the Health Check path).
-That will cause the ALB to mark the instance as `unhealthy` and traffic wont be sent to it. Then the ELB will mark the instance as `OutOfService`, and that will trigger the CloudWatch Alarm, that will invoke the Lambda function, that will de-register it from the ALB and finally will terminate the instance.
+That will cause the ALB to mark the instance as `unhealthy` and traffic won't be sent to it. Then the ELB will mark the instance as `OutOfService`, and that will trigger the CloudWatch Alarm, that will invoke the Lambda function, that will de-register it from the ALB and finally will terminate the instance.
 
 
 [spotfleet-annunced]: https://aws.amazon.com/blogs/aws/amazon-ec2-spot-fleet-api-manage-thousands-of-instances-with-one-request
