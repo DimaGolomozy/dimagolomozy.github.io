@@ -34,7 +34,7 @@ Now, we have the ability the choose a combination of instance types and pricing 
 | **Notifications**           |                  V                 |         X         |  
 
 Lots of [Lambda][aws-lambda] functions were necessary for Spot Fleet to handle some basic things; Updates, Health Check from ELB, Adding Target Group, etc...
-Now, one can move his Spot Fleet to Auto Scaling Group and enjoy better integration with all of the features above.
+Now, one can move his Spot Fleet to Auto Scaling Group and enjoy better integration with all the features above.
 
 Enjoy scaling...
 
