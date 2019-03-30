@@ -134,6 +134,61 @@ public int gen(Object message) {
 {% endhighlight %}
 _hell, you can use even both methods... crazy!!!_
 
+## The Scala Way
+Early this year (2019), I've started a new job, and their main language is Scala. This why I've decided to try to rewrite this Prioritized Mailbox the Scala way.
+
+The `interface` that became a `trait`
+
+{% highlight scala %}
+    trait PrioritizedMessage {
+      val priority: Int
+    }
+    
+    object PrioritizedMessage {
+      val URGENT = 100
+      val HIGH = 200
+      val MEDIUM = 300
+      val LOW = 400
+    
+      trait Urgent extends PrioritizedMessage {
+        override val priority = URGENT
+      }
+    
+      trait High extends PrioritizedMessage {
+        override val priority = HIGH
+      }
+    
+      trait Medium extends PrioritizedMessage {
+        override val priority = MEDIUM
+      }
+    
+      trait Low extends PrioritizedMessage {
+        override val priority = LOW
+      }
+    }
+{% endhighlight %}
+
+The mailbox:
+
+{% highlight scala %}  
+
+    class MyPrioritizedMailbox(settings: ActorSystem.Settings, config: Config)
+      extends UnboundedStablePriorityMailbox({
+        val DEFAULT_PRIORITY = if (config.hasPath("priority.default")) config.getInt("priority.default") else PrioritizedMessage.MEDIUM
+        val POISON_PILL_PRIORITY = if (config.hasPath("priority.poison-pill")) config.getInt("priority.poison-pill") else PrioritizedMessage.HIGH
+        val KILL_PRIORITY = if (config.hasPath("priority.kill-pill")) config.getInt("priority.kill-pill") else PrioritizedMessage.HIGH
+    
+        PriorityGenerator {
+          case p: PrioritizedMessage => p.priority
+          case PoisonPill => POISON_PILL_PRIORITY
+          case Kill => KILL_PRIORITY
+          case _ => DEFAULT_PRIORITY
+        }
+      })
+  
+{% endhighlight %}
+
+
 
 [tim-site]: http://thetimmedia.com
 [akka]: https://akka.io
