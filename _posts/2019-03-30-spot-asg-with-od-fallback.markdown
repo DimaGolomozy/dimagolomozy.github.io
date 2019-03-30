@@ -1,10 +1,10 @@
 ---
 layout: post
 title:  "How I stopped using Spotinst Elastigroup"
-description: "Use AWS AutoScalingGroup with Spots and OnDemand for fallback and not Spotinst Elastigroup"
-image: assets/images/folder/image.png
+description: "Use AWS AutoScalingGroup with Spots and OnDemand instances for fallback"
+image: assets/images/stop-using-spotinst/spot-ondemand-asg.png
 comments: true
-date: 2019-01-10 14:00:00
+date: 2019-04-30 14:00:00
 tags: [AWS, Spotinst, Elastigroup, ASG, Spots, OnDemand, OD, Fallback, CloudFormation]
 ---
 
