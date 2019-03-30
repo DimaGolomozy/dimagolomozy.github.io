@@ -244,6 +244,9 @@ The Spots ASG CPU Utilization will reach the threshold very quickly, there will 
 
 When this scenario works, the min amd max can be changed to `min = 2, max = 10`. By that, the Spots ASG will have the ability to launch more spots to help with the load, and eventually the CPU Utilization of the group will decrease, those leading OnDemand instance to scale in. 
 
+<br>
+***Hope this post helped you at least in some way.  
+Dont forget to leave a comment :)***
 
 [aws-cloudformation-template]: https://aws.amazon.com/cloudformation/aws-cloudformation-templates
 [spotinst-elastigroup]: https://spotinst.com/products/elastigroup
