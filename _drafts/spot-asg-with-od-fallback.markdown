@@ -10,10 +10,9 @@ tags: [AWS, Spotinst, Elastigroup, ASG, Spots, OnDemand, OD, Fallback, CloudForm
 
 [Spotinst Elastigroup][spotinst-elastigroup] brought lots of nice features to the table. They have the ability to define a "single" group with multiple instance types, Spots and OnDemand, and can predict Spot behavior, capacity trends, pricing, and balance the capacity accordingly.
 
-BUT, what if we don't need all those fancy features, and just want ASG with Spots and OnDemand for fallback (and to lower the "cloud" costs) - well this post is just the place.
+BUT, what if we don't need all those fancy features, and we just want ASG with Spots and OnDemand instances for fallback (and to lower the "cloud" costs) - well this post is just the place.  
 With the new [ASG update]({% post_url 2018-11-18-asg-with-multi-instance-types %}) we can use multiple instance types for the Spot ASG,
 CloudWatch Alarms for scaling and another ASG to fallback on OnDemand instances.
-
 
 
 ## Architecture
@@ -25,12 +24,12 @@ We will use [AWS CloudFormation Template][aws-cloudformation-template] to deploy
 * Two [Amazon CloudWatch Alarms][aws-cloudwatch-alarm]
 * Two [Scaling Policy][aws-scaling-policy]
 
-The GOAL of the architecture is to run as much Spot capacity as possible and decrease the risk of application impact due to Spot interruption or un-availability.
-If Spot capacity is insufficient, additional OnDemand capacity will be ready to scale out fast.
+The GOAL of the architecture is to run as much Spot capacity as possible and decrease the risk of application impact due to Spot interruption or un-availability. 
+If Spot capacity is insufficient, additional OnDemand capacity will be ready to scale out fast.  
 We will use two Auto Scaling Groups; the first will be for the Spots (the main capacity supplier) and the second group for the OnDemand instances.
-If the Spot group is unable to fulfill the target capacity and scale out due to lack of capacity, there CPU utilization will grow until it will breach the CloudWatch CPU Utilization alarm that will trigger the OnDemand group scaling policy to scale out.
-Once the Spot group will fulfill its target capacity of CPU Utilization of 40% _(The actual CloudWatch metric thresholds are examples, as these vary across the different applications and regions)_ it will be lower then CloudWatch CPU Utilization alarm threshold of CPU Utilization 60% that will scale in the OnDemand group.
-This solution will also work for Spot interruption, as when the Spot is lost, the Auto Scaling Group will try to create another spot from a different type. If it will success - Great, if not - the CPU will grow again that will trigger that alarm.
+If the Spot group is unable to fulfill the target capacity and scale out due to lack of capacity, there CPU utilization will grow until it will breach the CloudWatch CPU Utilization alarm that will trigger the OnDemand group scaling policy to scale out.  
+Once the Spot group will fulfill its target capacity of CPU Utilization of 40% _(The actual CloudWatch metric thresholds are examples, as these vary across the different applications and regions)_ it will be lower then CloudWatch CPU Utilization alarm threshold of CPU Utilization 60% that will scale in the OnDemand group.  
+This solution will also work for Spot interruption, as when the Spot is lost, the Auto Scaling Group will try to create another spot from a different type. If it will success - Great, if not - the CPU will grow again and that will trigger that alarm.  
 _(Optional: A CloudWatch Rule can be created from the `EC2 Spot Instance Interruption Warning` event to scale out the OnDemand group)_
 
 The following diagram shows how the components work together.
@@ -41,6 +40,7 @@ The following diagram shows how the components work together.
 _All the code and cloudformation templates are minimal and shows only whats needed for this blog post._
 
 _The actual CloudWatch metric thresholds are examples, as these vary across the different applications and regions._
+
 
 #### Elastic Load Balancing
 The ElasticLoadBalancing is just the entry point for traffic in this example, Nothing fancy here.
@@ -86,7 +86,7 @@ Note that the `InstanceType` field is not really mandatory. The real instance ty
 
 #### The Auto Scaling Groups
 We will configured 2 Auto Scaling Groups, one for the Spots and the other for the OnDemand.
-Pay attention that the `MinSize` for the Spots group is 1 while in the OnDemand group it is 0. This because we want to allow the group to scale down to 0 when no OnDemand are needed.
+Pay attention that the `MinSize` for the Spots group is 1 while in the OnDemand group it is 0. This because we want to allow the group to scale down to 0 when no OnDemand instances are needed.
 
 Because we are going to use CloudWatch Alarm based by the Spots group CPU Utilization, I set the `OnDemandBaseCapacity` to 1 so there will be always a CPU utilization metric for the Spots group (in case there will be no spots available at all).
 
@@ -157,7 +157,7 @@ Because we are going to use CloudWatch Alarm based by the Spots group CPU Utiliz
 {% endhighlight %}
 
 #### Spots ASG Scaling Policy
-This [Target Tracking Scaling Policy](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html) will hold the group the 40% CPU Utilization.
+This [Target Tracking Scaling Policy](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html) will hold the group on ~40% CPU Utilization.
 Nothing fancy here either.
 
 {% highlight json %}
@@ -180,8 +180,8 @@ Nothing fancy here either.
 {% endhighlight %}
 
 #### OnDemand ASG Scaling
-Here is where the magic happens. When there will be no Spots available, the CPU Utilization of the group will grow and grow until it will breach the below alarm threshold.
-The alarm will trigger the Scaling Policy that will add 1 instance to the OnDemand group. The Spots group will try to scale in/out the group to reach the 40% CPU utilization, those making the below alarm to OK state that will remove OnDemand instances from the group.
+Here is where the magic happens. When there will be no Spots available, the CPU Utilization of the group will grow and grow until it will breach the below alarm threshold (60%).
+The alarm will trigger the Scaling Policy that will add 1 instance to the OnDemand group (sometimes it will be better to add 2 instances at once, to help handle the load quickly). The Spots ASG will try to scale in/out the group to reach the 40% CPU utilization, those making the below alarm to OK state that will remove OnDemand instances from the group.
 
 {% highlight json %}
 {
@@ -237,10 +237,13 @@ The alarm will trigger the Scaling Policy that will add 1 instance to the OnDema
 {% endhighlight %}
 
 ## Test
-aaaa
+Of course all we have to do now is test it out;
 
+Setting the Spots ASG to `min = max = 2`, and to lower the CPU Utilization threshold, will help testing the OnDemand ASG scale in/out.
+The Spots ASG CPU Utilization will reach the threshold very quickly, there will be no Spots to scale out (because of the `min = max = 2`), those OnDemand instance should be launched.
 
-you can remove the 1 base OnDemand in the spots ASG and add another alarm for "no instances"
+When this scenario works, the min amd max can be changed to `min = 2, max = 10`. By that, the Spots ASG will have the ability to launch more spots to help with the load, and eventually the CPU Utilization of the group will decrease, those leading OnDemand instance to scale in. 
+
 
 [aws-cloudformation-template]: https://aws.amazon.com/cloudformation/aws-cloudformation-templates
 [spotinst-elastigroup]: https://spotinst.com/products/elastigroup
